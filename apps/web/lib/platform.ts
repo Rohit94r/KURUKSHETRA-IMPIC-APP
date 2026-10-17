@@ -8,6 +8,15 @@
  */
 export const IS_APP = process.env.NEXT_PUBLIC_LAYERFLOW_APP === "1";
 
+/**
+ * Running inside the Android app itself (not the app's pages opened in a desktop
+ * browser). The app's native bridge defines window.Capacitor before any page
+ * script runs; reading it keeps @capacitor/core out of the website bundle.
+ */
+export function isNativeApp(): boolean {
+  return IS_APP && typeof window !== "undefined" && !!(window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
+}
+
 const SERVER_KEY = "layerflow-server";
 /** Baked in at build time; the Android emulator reaches the host machine at 10.0.2.2. */
 export const DEFAULT_SERVER = (process.env.NEXT_PUBLIC_LAYERFLOW_SERVER ?? "http://10.0.2.2:3000").replace(/\/+$/, "");

@@ -17,7 +17,8 @@ import { api, refreshPoints, type Challenge, type HintResult, type LearnerView, 
 import { useLearner } from "@/lib/learner";
 import { cn } from "@/lib/utils";
 import { clearChatContext, openChat, setChatContext } from "@/lib/chat-context";
-import { apiUrl, challengeHref, resolveRouteId } from "@/lib/platform";
+import { challengeHref, resolveRouteId } from "@/lib/platform";
+import { apiFetch } from "@/lib/app-fetch";
 import { haptic } from "@/lib/native";
 
 const RUNG_NAMES = ["", "nudge", "specific", "mechanism", "built-in"];
@@ -85,7 +86,7 @@ function Workspace() {
   useEffect(() => {
     const sid = search.get("submission");
     if (!sid) return;
-    fetch(apiUrl(`/api/submissions/${sid}`))
+    apiFetch(`/api/submissions/${sid}`)
       .then((r) => r.json())
       .then((s) => {
         if (!s.submission_id) return;

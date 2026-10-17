@@ -151,11 +151,13 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     return payload;
   });
 
-  /* ── CORS, for the Android app only ──
+  /* ── CORS, for the Android app's pages ──
      The website is same-origin (Next proxies /api), so it never sends a
-     cross-origin request. The app's pages are served from inside the APK
-     (https://localhost), so the API answers that origin — plus any listed in
-     LAYERFLOW_CORS_ORIGINS (comma-separated). Every other origin gets no headers. */
+     cross-origin request, and the installed app calls the API through Android's
+     native HTTP stack, which needs no CORS. This is for the app's pages when
+     they run in a WebView fetch or a desktop browser (https://localhost) — plus
+     any origin in LAYERFLOW_CORS_ORIGINS (comma-separated). Every other origin
+     gets no headers. */
   const corsOrigins = new Set([
     "https://localhost",
     "http://localhost",

@@ -17,6 +17,7 @@ import { useLearner } from "@/lib/learner";
 import { DEFAULT_REMINDER_HOUR, appVersion, haptic, hapticsOn, isNative, reminderHour, setHapticsOn, setStreakReminder } from "@/lib/native";
 import { DEFAULT_SERVER, normalizeServer, serverUrl, setServerUrl } from "@/lib/platform";
 import { cn } from "@/lib/utils";
+import { appFetch } from "@/lib/app-fetch";
 import { showToast } from "./AppChrome";
 
 const EXPLORE = [
@@ -108,10 +109,10 @@ function ServerSettings() {
   const test = async (url: string) => {
     setState("testing");
     try {
-      const ctl = new AbortController();
-      const timer = setTimeout(() => ctl.abort(), 6000);
-      const r = await fetch(`${normalizeServer(url)}/api/health`, { signal: ctl.signal, cache: "no-store" });
-      clearTimeout(timer);
+      const r = await Promise.race([
+        appFetch(`${normalizeServer(url)}/api/health`, { cache: "no-store" }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 6000)),
+      ]);
       const ok = r.ok && ((await r.json()) as { ok?: boolean }).ok === true;
       setState(ok ? "ok" : "fail");
       haptic(ok ? "success" : "error");

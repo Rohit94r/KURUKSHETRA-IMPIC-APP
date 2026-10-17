@@ -7,12 +7,9 @@
  * inside the app.
  */
 import { useEffect, useRef } from "react";
-import { IS_APP } from "@/lib/platform";
+import { IS_APP, isNativeApp } from "@/lib/platform";
 
-// The app's native bridge defines window.Capacitor before any page script runs;
-// reading it (instead of importing @capacitor/core) keeps the website bundle free of it.
-export const isNative = (): boolean =>
-  IS_APP && typeof window !== "undefined" && !!(window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
+export const isNative = isNativeApp;
 
 function readPref(key: string): string | null {
   try {

@@ -33,8 +33,10 @@ which is how the **Android emulator** reaches `npm start` on the same computer.
   and enter your computer's LAN address (e.g. `http://192.168.1.5:3000`) → **Test** → **Save**.
   Or bake it in: `npm run app:build -- --server http://192.168.1.5:3000`.
 - **A deployed server:** use its URL (https recommended), e.g. `--server https://layerflow.example.com`.
-- The API allows the app's origin (`https://localhost`) for CORS. To allow more origins,
-  set `LAYERFLOW_CORS_ORIGINS=https://a.example,https://b.example` on the server.
+- **Any Layerflow server works as it is** — the app calls the API through Android's own HTTP
+  stack (`apps/web/lib/app-fetch.ts`), so the server needs no CORS setup and plain `http` is fine.
+  (CORS only matters when you open the app's exported pages in a desktop browser; the API allows
+  `https://localhost`, and `LAYERFLOW_CORS_ORIGINS` adds more origins.)
 
 ## Release build
 
@@ -59,7 +61,7 @@ apps/web  ──next build (NEXT_PUBLIC_LAYERFLOW_APP=1, output: export)──�
                                                                             │ cap sync
 apps/mobile/android  ◀──────────────────────────────────────────────────────┘
    MainActivity        clean URLs: /dashboard → dashboard.html inside the APK
-   WebView (https://localhost) ──fetch /api/* ──▶  your Layerflow server (Me → Server)
+   WebView (https://localhost) ──/api/* via native HTTP──▶  your Layerflow server (Me → Server)
 ```
 
 - **One codebase.** Everything app-only is behind `IS_APP` (`apps/web/lib/platform.ts`), a
@@ -69,7 +71,9 @@ apps/mobile/android  ◀──────────────────�
   `AppHome` (Home tab), `MeScreen` (Me tab), `PullToRefresh`. The shared `AppShell` switches to a
   native top bar in the app; the Ask Priya chat becomes a bottom sheet.
 - **Native helpers** — `apps/web/lib/native.ts` (haptics, share, Custom Tabs, streak reminders,
-  back-button handlers); every helper is a no-op on the website.
+  back-button handlers); every helper is a no-op on the website. `apps/web/lib/app-fetch.ts` sends
+  API calls through Android's HTTP stack (no CORS, no mixed-content blocking) and hands back a
+  normal `Response`.
 - **Dynamic pages** — a static export can't pre-render every challenge id, so the app ships one
   placeholder page and passes the id in the query: `/challenge/_?id=last-k-total`
   (`challengeHref` / `bountyHref`).
