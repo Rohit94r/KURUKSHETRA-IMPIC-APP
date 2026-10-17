@@ -462,3 +462,64 @@
   background-color: #f5f5f5 !important;
   color: #0a0a0a !important;
 }
+
+/* ── the Android app (html[data-app], set only by the app build) ─────────────
+   Capacitor draws the WebView edge to edge and exposes the system-bar insets
+   as --safe-area-inset-* (falling back to env()); everything app-only pads
+   itself with --lf-sat / --lf-sab. */
+html[data-app] {
+  --lf-sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --lf-sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+html[data-app] body { overscroll-behavior-y: none; }
+html[data-app] :is(.lf-tabbar, .lf-appbar) { -webkit-user-select: none; user-select: none; }
+
+html[data-splash="done"] #lf-splash { display: none; }
+
+/* the tab bar steps aside while the keyboard is up */
+.lf-tabbar { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+html[data-app][data-keyboard="open"] .lf-tabbar { transform: translateY(115%); }
+html[data-app][data-keyboard="open"] .lf-sheet-pad { margin-bottom: 12px !important; }
+
+.lf-page-in { animation: lf-page-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes lf-page-in { from { opacity: 0; transform: translateY(10px); } }
+
+.lf-caret { animation: lf-blink 1s steps(1) infinite; }
+@keyframes lf-blink { 50% { opacity: 0; } }
+
+@keyframes lf-wave { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(16deg); } 40% { transform: rotate(-8deg); } 60% { transform: rotate(14deg); } 80% { transform: rotate(-4deg); } }
+
+/* the splash's floor: a lime grid tipped into perspective */
+.lf-splash-grid {
+  background-image: linear-gradient(rgba(184, 247, 8, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(184, 247, 8, 0.07) 1px, transparent 1px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 45%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse 60% 55% at 50% 45%, #000 0%, transparent 70%);
+  transform: perspective(520px) rotateX(58deg) scale(2.4) translateY(6%);
+  transform-origin: 50% 60%;
+}
+
+/* Priya's tab button: a slowly turning brand ring */
+.lf-priya-ring { background: conic-gradient(from 0deg, #bbf451, #359462, #0586d2, #7b35f0, #bbf451); animation: lf-spin 5s linear infinite; }
+@keyframes lf-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-page-in, .lf-priya-ring, .lf-caret { animation: none; }
+}
+
+/* dark theme: the few app surfaces the global recolouring above doesn't reach — and the
+   app's dark hero cards, which are surfaces, not "primary pills", so they stay dark */
+.dark .lf-ink-card.bg-neutral-950.text-white { background-color: #15171a !important; color: #ffffff !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07); }
+.dark .lf-tabbar .ring-neutral-50 { --tw-ring-color: #0a0a0a !important; }
+.dark .lf-tabbar .bg-\[\#bbf451\] { background-color: #bbf451 !important; }
+
+/* pages written for the website's 57px header pin their sub-headers under it; the app bar is 56px below the status bar */
+html[data-app] .top-\[57px\] { top: calc(var(--lf-sat) + 56px); }
+
+/* full-screen overlays (the Meet room, payment and PIN sheets, the thread drawer) keep their controls clear of the system bars */
+html[data-app] .fixed.inset-0:is(.z-\[70\], .z-\[80\], .z-\[88\], .z-\[90\]):not(.lf-chat-root) {
+  padding-top: var(--lf-sat);
+  padding-bottom: var(--lf-sab);
+}

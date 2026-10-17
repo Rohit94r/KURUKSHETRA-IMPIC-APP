@@ -10,6 +10,7 @@ import { Card, LEVEL_STYLE, PageHeading, TagBadge } from "@/components/app/bits"
 import { api, type ChallengeSummary, type LearnerView } from "@/lib/api";
 import { useLearner } from "@/lib/learner";
 import { cn } from "@/lib/utils";
+import { challengeHref } from "@/lib/platform";
 
 const LEVELS = ["easy", "medium", "hard"] as const;
 
@@ -64,7 +65,7 @@ export default function PracticePage() {
                   key={l}
                   onClick={() => {
                     const first = list.find((c) => c.difficulty === l);
-                    if (first) router.push(`/challenge/${first.id}`);
+                    if (first) router.push(challengeHref(first.id));
                   }}
                   className="rounded-xl border border-neutral-200 bg-white px-3 py-2.5 font-poppins text-sm font-semibold capitalize text-neutral-800 transition-all hover:border-[#359462] hover:bg-[#359462] hover:text-white"
                 >
@@ -80,7 +81,7 @@ export default function PracticePage() {
               <>
                 <h3 className="mt-2 font-instrumental text-3xl leading-none text-[#151515]">{me.next_challenge.challenge_id}</h3>
                 <p className="mt-2 text-[13px] leading-5 text-[#4b5b4f]">{me.next_challenge.reason}</p>
-                <Link href={`/challenge/${me.next_challenge.challenge_id}`} className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-full bg-[#359462] px-5 text-[13px] font-semibold text-white hover:bg-[#2c7a51]">
+                <Link href={challengeHref(me.next_challenge.challenge_id)} className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-full bg-[#359462] px-5 text-[13px] font-semibold text-white hover:bg-[#2c7a51]">
                   Start it <ArrowRight className="size-3.5" />
                 </Link>
               </>
@@ -144,7 +145,7 @@ export default function PracticePage() {
           const st = status[c.id];
           return (
             <motion.div key={c.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, ease: [0.22, 1, 0.36, 1], duration: 0.5 }}>
-              <Link href={`/challenge/${c.id}`} className="group block h-full rounded-3xl border border-neutral-200/80 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-neutral-950 hover:shadow-[0_16px_40px_-16px_rgba(16,15,25,0.18)]">
+              <Link href={challengeHref(c.id)} className="group block h-full rounded-3xl border border-neutral-200/80 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-neutral-950 hover:shadow-[0_16px_40px_-16px_rgba(16,15,25,0.18)]">
                 <div className="flex items-center gap-2">
                   <span className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold capitalize", LEVEL_STYLE[c.difficulty])}>{c.difficulty}</span>
                   {judge.includes(c.id) && <span className="rounded-full bg-neutral-950 px-2.5 py-0.5 text-[10.5px] font-semibold text-[#bbf451]">judge</span>}

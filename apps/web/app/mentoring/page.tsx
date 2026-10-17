@@ -17,6 +17,7 @@ import { api, timeAgo, type MentorOverview, type MentorProblem } from "@/lib/api
 import { useLearner } from "@/lib/learner";
 import { useI18n } from "@/lib/i18n/context";
 import { cn } from "@/lib/utils";
+import { challengeHref } from "@/lib/platform";
 
 type Filter = "attention" | "solved" | "all";
 
@@ -268,7 +269,7 @@ export default function MentoringPage() {
                   >
                     <Video className="size-4.5" /> Join session
                   </button>
-                  <Link href={`/challenge/${sel?.challenge_id ?? freshSel?.challenge_id}`} className="flex items-center justify-center gap-1.5 text-[12.5px] font-semibold text-neutral-500 hover:text-neutral-950">
+                  <Link href={challengeHref(sel?.challenge_id ?? freshSel?.challenge_id ?? "")} className="flex items-center justify-center gap-1.5 text-[12.5px] font-semibold text-neutral-500 hover:text-neutral-950">
                     Open the problem instead <ArrowRight className="size-3.5" />
                   </Link>
                 </div>
@@ -288,7 +289,7 @@ export default function MentoringPage() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#2f7c53]">Priya's pick for you next</p>
                 <p className="mt-1.5 text-[15px] font-semibold tracking-[-0.02em] text-neutral-950">{data.next.title}</p>
                 <p className="mt-1 text-[12.5px] leading-[1.5] text-neutral-600">{data.next.reason}</p>
-                <Link href={`/challenge/${data.next.challenge_id}`} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#2f7c53]">
+                <Link href={challengeHref(data.next.challenge_id)} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#2f7c53]">
                   Start it <ArrowRight className="size-3.5" />
                 </Link>
               </Card>

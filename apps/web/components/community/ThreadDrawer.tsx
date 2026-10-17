@@ -16,6 +16,8 @@ import { Markdown } from "@/components/app/Markdown";
 import { cn } from "@/lib/utils";
 import { Avatar, KindChip, RoleBadge, Spoiler, StatusPill, VoteButton } from "./bits";
 import { FOCUS, statusOf, toThreadInfo, type ThreadInfo } from "./meta";
+import { challengeHref } from "@/lib/platform";
+import { useBackHandler } from "@/lib/native";
 
 type Thread = Post & { replies: Reply[] };
 
@@ -63,7 +65,7 @@ function ReplyCard({
         </time>
       </div>
       <div className={cn("mt-2.5", PROSE)}>
-        <Spoiler locked={r.locked} title={thread.challenge_title} href={thread.challenge_id ? `/challenge/${thread.challenge_id}` : null}>
+        <Spoiler locked={r.locked} title={thread.challenge_title} href={thread.challenge_id ? challengeHref(thread.challenge_id) : null}>
           <Markdown text={r.body} className="text-[13.5px] text-neutral-800" />
         </Spoiler>
       </div>
@@ -117,6 +119,7 @@ export function ThreadDrawer({
   useEffect(() => {
     cb.current = { onClose, onLoaded };
   });
+  useBackHandler(true, () => cb.current.onClose());
 
   const load = useCallback(
     () =>
@@ -241,7 +244,7 @@ export function ThreadDrawer({
               <KindChip kind={t.kind} />
               {t.challenge_id && (
                 <Link
-                  href={`/challenge/${t.challenge_id}`}
+                  href={challengeHref(t.challenge_id)}
                   className={cn("inline-flex min-w-0 items-center gap-1 rounded-full border border-neutral-200 px-2.5 py-0.5 text-[11.5px] font-medium text-neutral-600 transition-colors hover:border-neutral-950 hover:text-neutral-950", FOCUS)}
                 >
                   <BookOpen className="size-3 shrink-0" />
@@ -296,7 +299,7 @@ export function ThreadDrawer({
                   {t.title}
                 </h2>
                 <div className={cn("mt-4", PROSE)}>
-                  <Spoiler locked={t.locked} title={t.challenge_title} href={t.challenge_id ? `/challenge/${t.challenge_id}` : null}>
+                  <Spoiler locked={t.locked} title={t.challenge_title} href={t.challenge_id ? challengeHref(t.challenge_id) : null}>
                     <Markdown text={t.body} className="text-[14px] leading-[1.65] text-neutral-800" />
                   </Spoiler>
                 </div>

@@ -7,6 +7,7 @@
  * comes from the line you clicked in the code.
  */
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { Crosshair, LoaderCircle, MousePointerClick, Send, Wand2 } from "lucide-react";
 import { api, isPlanLimit, refreshPoints, type BountyCategory, type BountySeverity, type BountySeverityInfo, type FileReportResult } from "@/lib/api";
@@ -226,9 +227,9 @@ export function ReportForm({
         <p className="rounded-xl bg-[#c64e27]/10 px-3 py-2 text-[12.5px] font-medium text-[#a8401f]">
           {error}
           {isPlanLimit(error) && (
-            <a href="/pricing" className="ml-1.5 font-semibold underline underline-offset-2">
+            <Link href="/pricing" className="ml-1.5 font-semibold underline underline-offset-2">
               See Pro
-            </a>
+            </Link>
           )}
         </p>
       )}

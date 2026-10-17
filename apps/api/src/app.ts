@@ -151,6 +151,34 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     return payload;
   });
 
+  /* ── CORS, for the Android app only ──
+     The website is same-origin (Next proxies /api), so it never sends a
+     cross-origin request. The app's pages are served from inside the APK
+     (https://localhost), so the API answers that origin — plus any listed in
+     LAYERFLOW_CORS_ORIGINS (comma-separated). Every other origin gets no headers. */
+  const corsOrigins = new Set([
+    "https://localhost",
+    "http://localhost",
+    "capacitor://localhost",
+    ...(process.env.LAYERFLOW_CORS_ORIGINS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  ]);
+  app.addHook("onRequest", async (req, reply) => {
+    const origin = req.headers.origin;
+    if (!origin || !corsOrigins.has(origin)) return;
+    reply.header("access-control-allow-origin", origin);
+    reply.header("vary", "origin");
+    if (req.method !== "OPTIONS") return;
+    reply.header("access-control-allow-methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    reply.header("access-control-allow-headers", req.headers["access-control-request-headers"] ?? "content-type, x-admin-token");
+    reply.header("access-control-max-age", "600");
+    return reply.status(204).send();
+  });
+  // preflights need a route to land on; the hook above answers them
+  app.options("/api/*", async (_req, reply) => reply.status(204).send());
+
   /* ── health ── */
   app.get("/api/health", async () => ({
     ok: true,

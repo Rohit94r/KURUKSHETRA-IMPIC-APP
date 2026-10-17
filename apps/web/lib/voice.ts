@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, type VoiceStatus } from "@/lib/api";
+import { apiUrl } from "@/lib/platform";
 
 let statusPromise: Promise<VoiceStatus | null> | null = null;
 export function voiceStatusOnce(): Promise<VoiceStatus | null> {
@@ -133,7 +134,7 @@ export function useSpeaker(): Speaker {
           return;
         }
         if (engineRef.current === "elevenlabs") {
-          const r = await fetch("/api/voice/tts", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: clean }) }).catch(() => null);
+          const r = await fetch(apiUrl("/api/voice/tts"), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: clean }) }).catch(() => null);
           if (my !== token.current) return;
           if (r && r.status === 200) {
             const url = URL.createObjectURL(await r.blob());
@@ -244,7 +245,7 @@ export function useListener(onFinal: (text: string) => void, lang = "en"): Liste
             const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
             if (blob.size < 1200) return;
             setInterim("…");
-            const r = await fetch("/api/voice/stt", { method: "POST", headers: { "content-type": blob.type.split(";")[0] || "audio/webm" }, body: blob }).catch(() => null);
+            const r = await fetch(apiUrl("/api/voice/stt"), { method: "POST", headers: { "content-type": blob.type.split(";")[0] || "audio/webm" }, body: blob }).catch(() => null);
             setInterim("");
             if (r && r.status === 200) {
               const j = (await r.json()) as { text?: string };

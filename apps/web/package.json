@@ -6,10 +6,20 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:app": "node ../../scripts/build-app.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/browser": "8.0.5",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/keyboard": "8.0.6",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/network": "8.0.1",
+    "@capacitor/share": "8.0.3",
+    "@capacitor/splash-screen": "8.0.2",
     "@ncdai/react-wheel-picker": "^1.2.3",
     "@number-flow/react": "^0.6.2",
     "@radix-ui/react-tooltip": "^1.2.16",

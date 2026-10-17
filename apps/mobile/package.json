@@ -1,0 +1,29 @@
+{
+  "name": "@layerflow/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Layerflow for Android — Capacitor shell around the statically exported web app (apps/web/out).",
+  "scripts": {
+    "build": "node ../../scripts/build-app.mjs",
+    "sync": "cap sync android",
+    "open": "cap open android",
+    "run": "cap run android",
+    "assets": "capacitor-assets generate --android --iconBackgroundColor \"#0a0a0a\" --iconBackgroundColorDark \"#0a0a0a\" --splashBackgroundColor \"#0a0a0a\" --splashBackgroundColorDark \"#0a0a0a\""
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/browser": "8.0.5",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/keyboard": "8.0.6",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/network": "8.0.1",
+    "@capacitor/share": "8.0.3",
+    "@capacitor/splash-screen": "8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "8.5.3"
+  }
+}

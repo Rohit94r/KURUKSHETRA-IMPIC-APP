@@ -21,7 +21,10 @@
     "harness": "tsx harness/all.ts",
     "test:unit": "tsx packages/core/test/unit.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck -w @layerflow/web",
-    "url": "ngrok http 3000"
+    "url": "ngrok http 3000",
+    "app:build": "node scripts/build-app.mjs",
+    "app:open": "node scripts/build-app.mjs --open",
+    "app:sync": "npm run sync -w @layerflow/mobile"
   },
   "devDependencies": {
     "@types/node": "26.6.5",

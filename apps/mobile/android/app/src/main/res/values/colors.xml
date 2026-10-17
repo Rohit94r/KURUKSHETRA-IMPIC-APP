@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Layerflow brand -->
+    <color name="lf_ink">#0A0A0A</color>
+    <color name="lf_lime">#B8F708</color>
+    <color name="lf_green">#359462</color>
+</resources>

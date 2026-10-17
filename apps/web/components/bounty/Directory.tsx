@@ -11,6 +11,7 @@ import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { LogoTile } from "@/components/app/Logo";
 import type { HostedProgram } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { bountyHref } from "@/lib/platform";
 
 export interface ExternalProgram {
   name: string;
@@ -54,7 +55,7 @@ function Head({ cols }: { cols: string[] }) {
 function HostedRow({ p }: { p: HostedProgram }) {
   const { name, demo } = companyName(p.company);
   return (
-    <Link href={`/bounty/${p.id}`} className="group grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3.5 gap-y-2 px-5 py-4 hover:bg-neutral-50 md:grid-cols-[minmax(0,1fr)_150px_170px_28px] md:gap-4">
+    <Link href={bountyHref(p.id)} className="group grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3.5 gap-y-2 px-5 py-4 hover:bg-neutral-50 md:grid-cols-[minmax(0,1fr)_150px_170px_28px] md:gap-4">
       <div className="col-span-2 flex min-w-0 items-center gap-3.5 md:col-span-1">
         <LogoTile src={p.logo} name={name} size={40} full={!!p.logo} />
         <div className="min-w-0">

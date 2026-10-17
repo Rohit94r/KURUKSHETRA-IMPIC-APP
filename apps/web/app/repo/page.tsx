@@ -15,6 +15,7 @@
  * built with (see components/repo/SiteReport.tsx).
  */
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import NumberFlow from "@number-flow/react";
 import {
@@ -642,9 +643,9 @@ export default function RepoPage() {
           <p className="mt-3 rounded-2xl bg-[#fdeee8] px-4 py-3 text-[13px] text-[#a8401f]">
             {error}
             {isPlanLimit(error) && (
-            <a href="/pricing" className="ml-1.5 font-semibold underline underline-offset-2">
+            <Link href="/pricing" className="ml-1.5 font-semibold underline underline-offset-2">
               See Pro
-            </a>
+            </Link>
           )}
           </p>
         )}

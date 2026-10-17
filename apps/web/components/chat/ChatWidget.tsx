@@ -6,6 +6,8 @@
  *   • on a problem page: knows the problem and your latest attempt, and helps
  *     with THAT — prose only, never code, never the answer (server-enforced)
  * Works with zero API keys (built-in replies); uses Groq / Gemini when set.
+ * In the Android app it is a full-height bottom sheet opened from the tab
+ * bar's Priya button, and the back button closes it.
  */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -19,6 +21,8 @@ import { useI18n } from "@/lib/i18n/context";
 import { OPEN_CHAT_EVENT, useChatContext } from "@/lib/chat-context";
 import { useListener, useSpeaker } from "@/lib/voice";
 import { Markdown } from "@/components/app/Markdown";
+import { IS_APP } from "@/lib/platform";
+import { useBackHandler } from "@/lib/native";
 
 interface Msg {
   role: "user" | "assistant";
@@ -129,7 +133,8 @@ export function ChatWidget({ variant = "app" }: { variant?: "app" | "landing" })
       setOpen(true);
       const m = (e as CustomEvent<string>).detail;
       if (m) setTimeout(() => send(m), 50);
-      else setTimeout(() => input.current?.focus(), 80);
+      // on a phone the keyboard would cover the starter questions — wait for a tap instead
+      else if (!IS_APP) setTimeout(() => input.current?.focus(), 80);
     };
     window.addEventListener(OPEN_CHAT_EVENT, on);
     return () => window.removeEventListener(OPEN_CHAT_EVENT, on);
@@ -137,18 +142,41 @@ export function ChatWidget({ variant = "app" }: { variant?: "app" | "landing" })
 
   const starters = onProblem ? PROBLEM_STARTERS : GENERAL_STARTERS;
   const last = msgs[msgs.length - 1];
+  useBackHandler(open, () => setOpen(false));
 
   return (
-    <div className={cn("fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-5 sm:right-5", variant === "landing" && "z-[60]")}>
+    <div
+      className={cn(
+        IS_APP ? "lf-chat-root pointer-events-none fixed inset-0 z-[80] flex flex-col items-end justify-end" : "fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-5 sm:right-5",
+        variant === "landing" && "z-[60]",
+      )}
+    >
+      <AnimatePresence>
+        {open && IS_APP && (
+          <motion.div key="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} onClick={() => setOpen(false)} className="pointer-events-auto absolute inset-0 bg-neutral-950/40" />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="flex h-[min(600px,calc(100svh-110px))] w-[calc(100vw-32px)] flex-col overflow-hidden rounded-[26px] border border-neutral-200/80 bg-white shadow-[0_24px_60px_-12px_rgba(0,0,0,0.25)] sm:w-[400px]"
+            initial={IS_APP ? { y: "100%" } : { opacity: 0, y: 16, scale: 0.97 }}
+            animate={IS_APP ? { y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={IS_APP ? { y: "100%" } : { opacity: 0, y: 16, scale: 0.97 }}
+            transition={IS_APP ? { type: "spring", stiffness: 380, damping: 38 } : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            data-no-ptr
+            style={IS_APP ? { height: "calc(100% - var(--lf-sat) - 10px)" } : undefined}
+            className={cn(
+              "flex flex-col overflow-hidden border border-neutral-200/80 bg-white",
+              IS_APP
+                ? "pointer-events-auto relative w-full rounded-t-[28px] border-b-0 shadow-[0_-16px_48px_-12px_rgba(0,0,0,0.3)]"
+                : "h-[min(600px,calc(100svh-110px))] w-[calc(100vw-32px)] rounded-[26px] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.25)] sm:w-[400px]",
+            )}
           >
+            {IS_APP && (
+              <div className="flex shrink-0 justify-center pt-2.5">
+                <span className="h-1 w-10 rounded-full bg-neutral-300" />
+              </div>
+            )}
             {/* header */}
             <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3">
               <div className="relative">
@@ -247,7 +275,7 @@ export function ChatWidget({ variant = "app" }: { variant?: "app" | "landing" })
                 e.preventDefault();
                 send(draft);
               }}
-              className="m-3 mt-1 flex items-end gap-1.5 rounded-[22px] border border-neutral-200 bg-white p-1.5 pl-3.5 focus-within:border-neutral-400"
+              className={cn("m-3 mt-1 flex items-end gap-1.5 rounded-[22px] border border-neutral-200 bg-white p-1.5 pl-3.5 focus-within:border-neutral-400", IS_APP && "lf-sheet-pad mb-[calc(var(--lf-sab)+12px)]")}
             >
               <textarea
                 ref={input}
@@ -278,13 +306,20 @@ export function ChatWidget({ variant = "app" }: { variant?: "app" | "landing" })
 
       <AnimatePresence>
         {nudge && !open && (
-          <motion.button initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} onClick={() => setOpen(true)} className="max-w-[240px] rounded-2xl rounded-br-md border border-neutral-200 bg-white px-3.5 py-2.5 text-left text-[12.5px] leading-[1.45] text-neutral-700 shadow-lg">
+          <motion.button
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpen(true)}
+            style={IS_APP ? { marginBottom: "calc(var(--lf-sab) + 84px)" } : undefined}
+            className={cn("max-w-[240px] rounded-2xl rounded-br-md border border-neutral-200 bg-white px-3.5 py-2.5 text-left text-[12.5px] leading-[1.45] text-neutral-700 shadow-lg", IS_APP && "pointer-events-auto mr-4")}
+          >
             Stuck? Ask me about <b>{ctx.title ?? "this problem"}</b> — I'll point you to the right line.
           </motion.button>
         )}
       </AnimatePresence>
 
-      {!open && (
+      {!open && !IS_APP && (
         <motion.button
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

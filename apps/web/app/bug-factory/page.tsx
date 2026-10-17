@@ -10,6 +10,7 @@ import { CodeEditor } from "@/components/app/CodeEditor";
 import { api, refreshPoints, type Challenge, type SubmitResult, type Outcome } from "@/lib/api";
 import { useLearner } from "@/lib/learner";
 import { cn } from "@/lib/utils";
+import { challengeHref } from "@/lib/platform";
 
 interface Pick {
   challenge: Challenge;
@@ -162,7 +163,7 @@ function Factory() {
                 </div>
                 <p className="mt-3 rounded-2xl bg-neutral-50 px-4 py-3 text-[13.5px] leading-[1.55] text-neutral-800">{result.explanation}</p>
                 {!result.debug?.passed && (
-                  <Link href={`/challenge/${pick.challenge.id}`} className="mt-3 inline-flex text-[12.5px] font-semibold text-neutral-600 hover:text-neutral-950">
+                  <Link href={challengeHref(pick.challenge.id)} className="mt-3 inline-flex text-[12.5px] font-semibold text-neutral-600 hover:text-neutral-950">
                     Need a hint or a replay? Open it in the workspace →
                   </Link>
                 )}

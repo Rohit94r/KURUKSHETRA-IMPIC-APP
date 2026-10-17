@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ launch splash: the Layerflow mark, sized to sit inside the
+     system's 192dp icon circle (the drawable itself is 288dp). The web splash
+     takes over from this exact spot and rebuilds the mark. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <group
+        android:translateX="94.85"
+        android:translateY="89"
+        android:scaleX="1.71875"
+        android:scaleY="1.71875">
+        <path
+            android:fillColor="@color/lf_lime"
+            android:pathData="M5.59 37.92Q3.98 37.08 3.98 35.27L3.98 15.44Q3.98 13.63 5.53 12.69L24.76 0.94Q26.31 0 26.31 1.81L26.31 25.97L28.85 24.56Q30.44 23.67 32.07 24.44L53.65 34.64Q55.28 35.41 53.69 36.27L30.2 49.03Q28.62 49.9 27.01 49.06Z" />
+        <path
+            android:fillColor="@color/lf_lime"
+            android:pathData="M1.59 48.1Q0 49 1.61 49.84L26.88 63.15Q28.49 64 30.09 63.15L55.59 49.7Q57.2 48.85 55.61 47.97L50.01 44.82Q48.42 43.93 46.82 44.79L28.5 54.68L10.19 45.02Q8.58 44.18 7.01 45.07Z" />
+    </group>
+</vector>

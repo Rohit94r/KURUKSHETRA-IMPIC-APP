@@ -7,16 +7,18 @@
  */
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ArrowUpRight, Bug, BookOpenText, Crown, Flame, FolderTree, Gavel, Gift, LayoutDashboard, ListChecks, Menu, MessagesSquare, ShieldCheck, Video, X, Check, Plus, Zap } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowUpRight, Bug, BookOpenText, ChevronLeft, Crown, Flame, FolderTree, Gavel, Gift, LayoutDashboard, ListChecks, Menu, MessagesSquare, Share2, ShieldCheck, Video, X, Check, Plus, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n/context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Logo } from "@/components/Logo";
+import { Logo, LogoMark } from "@/components/Logo";
 import { DEMO_LEARNERS, sanitizeLearner, useLearner } from "@/lib/learner";
 import { api, type RewardsSummary } from "@/lib/api";
 import { ChatWidget } from "@/components/chat/ChatWidget";
+import { IS_APP, TAB_ROOTS } from "@/lib/platform";
+import { haptic, share } from "@/lib/native";
 
 export function SectionLabel({ children, className }: { children: React.ReactNode; className?: string }) {
   return <p className={cn("text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400", className)}>{children}</p>;
@@ -104,7 +106,7 @@ function StreakChip({ learner }: { learner: string }) {
   );
 }
 
-function LearnerPicker() {
+export function LearnerPicker() {
   const { t } = useI18n();
   const [learner, setLearner] = useLearner();
   const [adding, setAdding] = useState(false);
@@ -170,7 +172,7 @@ function LearnerPicker() {
   );
 }
 
-function SandboxStatus() {
+export function SandboxStatus() {
   const { t } = useI18n();
   const [h, setH] = useState<{ ok: boolean; llm: string | null; ai?: string | null; warm?: number } | null>(null);
   useEffect(() => {
@@ -195,11 +197,84 @@ function SandboxStatus() {
   );
 }
 
+export const HOW_IT_RUNS = [
+  ["Runtime", "Pyodide · WebAssembly"],
+  ["Process", "fresh per submission"],
+  ["Host files", "none (permission model)"],
+  ["Hidden tests", "API memory only"],
+  ["Hints", "prose-only, validated"],
+  ["Mentor & chat", "same no-code guardrail"],
+] as const;
+
+/**
+ * The Android app's frame for the same pages: a native top bar under the
+ * status bar (back arrow on inner screens, the mark on tab roots), content
+ * that clears the bottom tab bar, and a page that slides in. The sidebar's
+ * contents live on the Me tab instead.
+ */
+function AppFrame({ title, subtitle, actions, children, wide }: { title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode; wide: boolean }) {
+  const { t } = useI18n();
+  const path = usePathname();
+  const router = useRouter();
+  const [learner] = useLearner();
+  const root = TAB_ROOTS.includes(path);
+  const back = () => {
+    haptic("tap");
+    if (window.history.length > 1) router.back();
+    else router.push("/");
+  };
+  return (
+    <div className="min-h-svh bg-neutral-50 font-sans text-neutral-950 antialiased">
+      <header className="lf-appbar sticky top-0 z-30 border-b border-neutral-200/70 bg-neutral-50/85 backdrop-blur-xl" style={{ paddingTop: "var(--lf-sat)" }}>
+        <div className="flex h-14 items-center gap-1.5 pl-2 pr-3">
+          {root ? (
+            <Link href="/" className="flex size-10 shrink-0 items-center justify-center" aria-label="Layerflow">
+              <LogoMark className="h-[26px]" />
+            </Link>
+          ) : (
+            <button onClick={back} className="flex size-10 shrink-0 items-center justify-center rounded-full text-neutral-900 transition-colors active:bg-neutral-200/70" aria-label={t("native.back")}>
+              <ChevronLeft className="size-[26px]" strokeWidth={2.2} />
+            </button>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[16.5px] font-semibold leading-tight tracking-[-0.025em] text-neutral-950">{title}</p>
+            {subtitle && <p className="truncate text-[11.5px] leading-tight text-neutral-500">{subtitle}</p>}
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {actions}
+            {path.startsWith("/challenge") && title && (
+              <button
+                onClick={() => share({ title: "Layerflow", text: `I'm hunting a bug in “${title}” on Layerflow — it shows you where to look, never the answer. 🐛` })}
+                className="flex size-9 items-center justify-center rounded-full text-neutral-500 transition-colors active:bg-neutral-200/70"
+                aria-label={t("native.share")}
+              >
+                <Share2 className="size-[18px]" />
+              </button>
+            )}
+            {learner && <StreakChip learner={learner} />}
+          </div>
+        </div>
+      </header>
+      <main key={path} className={cn("lf-page-in mx-auto w-full px-4 pt-5", wide ? "max-w-[90rem]" : "max-w-6xl")} style={{ paddingBottom: "calc(var(--lf-sab) + 96px)" }}>
+        {children}
+      </main>
+      <ChatWidget />
+    </div>
+  );
+}
+
 export function AppShell({ title, subtitle, actions, children, wide = false }: { title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode; wide?: boolean }) {
   const { t } = useI18n();
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [learner] = useLearner();
+
+  if (IS_APP)
+    return (
+      <AppFrame title={title} subtitle={subtitle} actions={actions} wide={wide}>
+        {children}
+      </AppFrame>
+    );
 
   return (
     <div className="flex min-h-svh bg-neutral-50 font-sans text-neutral-950 antialiased">
@@ -248,14 +323,7 @@ export function AppShell({ title, subtitle, actions, children, wide = false }: {
           <section>
             <SectionLabel className="mb-2.5 px-1">How your code runs</SectionLabel>
             <dl className="overflow-hidden rounded-2xl border border-neutral-200/70 text-[12px]">
-              {[
-                ["Runtime", "Pyodide · WebAssembly"],
-                ["Process", "fresh per submission"],
-                ["Host files", "none (permission model)"],
-                ["Hidden tests", "API memory only"],
-                ["Hints", "prose-only, validated"],
-                ["Mentor & chat", "same no-code guardrail"],
-              ].map(([k, v], i) => (
+              {HOW_IT_RUNS.map(([k, v], i) => (
                 <div key={k} className={cn("flex items-center justify-between gap-3 px-3.5 py-2", i % 2 ? "bg-neutral-50/70" : "bg-white")}>
                   <dt className="text-neutral-500">{k}</dt>
                   <dd className="text-right font-semibold tracking-[-0.01em] text-neutral-900">{v}</dd>

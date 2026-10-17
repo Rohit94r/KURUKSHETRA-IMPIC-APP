@@ -2,7 +2,10 @@
  * Typed client for the Layerflow API. Same origin (/api is proxied to the
  * Fastify server by next.config.ts), so no CORS and one URL for the judges.
  * The browser never receives a hidden test — these types have no room for one.
+ * (The Android app has no same-origin proxy: apiUrl points it at its server.)
  */
+import { apiUrl } from "@/lib/platform";
+
 export type Outcome = "passed" | "wrong_output" | "runtime_error" | "timeout";
 
 export interface ChallengeSummary {
@@ -802,7 +805,7 @@ async function req<T>(method: string, url: string, body?: unknown): Promise<T> {
   const headers: Record<string, string> = {};
   if (body) headers["content-type"] = "application/json";
   if (url.startsWith("/api/admin/")) headers["x-admin-token"] = adminToken();
-  const res = await fetch(url, {
+  const res = await fetch(apiUrl(url), {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,

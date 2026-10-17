@@ -14,6 +14,7 @@ import { Card, MasteryBar, TagBadge } from "@/components/app/bits";
 import { api, timeAgo, type LearnerView, type LedgerEntry, type RewardsView } from "@/lib/api";
 import { useLearner } from "@/lib/learner";
 import { cn } from "@/lib/utils";
+import { challengeHref } from "@/lib/platform";
 
 const CONCEPT_COLOR: Record<string, string> = {
   lists_indexing: "#5e2ac4",
@@ -103,7 +104,7 @@ function Dashboard() {
                 {isNew ? "Welcome to Layerflow. Your progress will show up here as you practise." : `${me.totals.challenges_cleared} of ${total} problems solved · ${me.streak_days}-day streak`}
               </p>
             </div>
-            <Link href={`/challenge/${me.next_challenge.challenge_id}`} className="inline-flex h-10 items-center gap-2 rounded-full bg-neutral-950 px-5 text-[13.5px] font-semibold text-white hover:bg-neutral-800">
+            <Link href={challengeHref(me.next_challenge.challenge_id)} className="inline-flex h-10 items-center gap-2 rounded-full bg-neutral-950 px-5 text-[13.5px] font-semibold text-white hover:bg-neutral-800">
               {isNew ? "Start your first problem" : `Continue: ${title(me.next_challenge.challenge_id)}`} <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -134,7 +135,7 @@ function Dashboard() {
                 <p className="text-[16px] font-semibold text-neutral-950">Start with {title(me.next_challenge.challenge_id)}</p>
                 <p className="mt-0.5 text-[13.5px] leading-[1.55] text-neutral-600">It takes about five minutes. After your first submission you'll see your skills, the mistakes to watch and the hints you used — right here.</p>
               </div>
-              <Link href={`/challenge/${me.next_challenge.challenge_id}`} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-[#359462] px-5 text-[13.5px] font-semibold text-white hover:bg-[#2c7a51]">
+              <Link href={challengeHref(me.next_challenge.challenge_id)} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-[#359462] px-5 text-[13.5px] font-semibold text-white hover:bg-[#2c7a51]">
                 Start <ArrowRight className="size-4" />
               </Link>
             </Card>
@@ -145,7 +146,7 @@ function Dashboard() {
                   <SectionLabel>Up next</SectionLabel>
                   <p className="mt-2 text-[17px] font-semibold text-neutral-950">{title(me.next_challenge.challenge_id)}</p>
                   <p className="mt-1 text-[13.5px] leading-[1.55] text-neutral-600">{me.next_challenge.reason}</p>
-                  <Link href={`/challenge/${me.next_challenge.challenge_id}`} className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-[#2f7c53] hover:underline">
+                  <Link href={challengeHref(me.next_challenge.challenge_id)} className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-[#2f7c53] hover:underline">
                     Start it <ArrowRight className="size-3.5" />
                   </Link>
                 </Card>
@@ -223,7 +224,7 @@ function Dashboard() {
               <SectionLabel>Recent submissions</SectionLabel>
               <div className="mt-2 divide-y divide-neutral-100">
                 {recent.map((h) => (
-                  <Link key={h.submission_id} href={`/challenge/${h.challenge_id}?submission=${h.submission_id}`} className="flex flex-wrap items-center gap-3 py-2.5 hover:bg-neutral-50/70">
+                  <Link key={h.submission_id} href={challengeHref(h.challenge_id, `submission=${h.submission_id}`)} className="flex flex-wrap items-center gap-3 py-2.5 hover:bg-neutral-50/70">
                     {h.passed ? <CheckCircle2 className="size-4 text-[#359462]" /> : <XCircle className="size-4 text-[#c64e27]" />}
                     <span className="text-[13.5px] font-medium text-neutral-900">{title(h.challenge_id)}</span>
                     {h.tags.map((t) => (

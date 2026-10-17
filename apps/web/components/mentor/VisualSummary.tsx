@@ -18,6 +18,7 @@ import { highlightLine } from "@/lib/python";
 import type { MentorSegment, MentorSession, TraceResult, TraceStep } from "@/lib/api";
 import { estimateMs, sleep, type Speaker } from "@/lib/voice";
 import { TAG_COLOR } from "@/components/app/bits";
+import { challengeHref } from "@/lib/platform";
 
 /* ───────────────────────── timeline ───────────────────────── */
 
@@ -462,7 +463,7 @@ function PlanScene({ seg }: { seg: Extract<MentorSegment["visual"], { kind: "pla
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#bbf451]">After this</p>
           <p className="mt-2 text-[1.4rem] font-medium tracking-[-0.03em] text-white">{seg.next.title}</p>
           <p className="mt-2 line-clamp-4 text-[12.5px] leading-[1.5] text-[#9aa0a6]">{seg.next.reason}</p>
-          <Link href={`/challenge/${seg.next.challenge_id}`} className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[#bbf451] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#17152a]">
+          <Link href={challengeHref(seg.next.challenge_id)} className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[#bbf451] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#17152a]">
             Open it <ArrowRight className="size-3.5" />
           </Link>
         </motion.div>

@@ -9,6 +9,7 @@ import { Card, OutcomeChip, PageHeading, TagBadge } from "@/components/app/bits"
 import { CodeEditor } from "@/components/app/CodeEditor";
 import { api, type Challenge, type HostileProgram, type LearnerView, type Outcome, type SubmitResult } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { challengeHref, serverUrl } from "@/lib/platform";
 
 const JUDGE = ["last-k-total", "count-passes", "first-n-squares", "middle-three"];
 const GOOD = "def last_k_total(marks, k):\n    if k >= len(marks):\n        return sum(marks)\n    return sum(marks[len(marks) - k:])\n";
@@ -57,7 +58,7 @@ function TryIt({ id }: { id: string }) {
           </div>
           <div className="flex flex-wrap gap-1.5">{r.mistake_tags.map((t) => <TagBadge key={t} tag={t} />)}</div>
           <p className="rounded-xl bg-neutral-50 px-3 py-2 text-[12.5px] leading-5 text-neutral-800">{r.explanation}</p>
-          <Link href={`/challenge/${id}?learner=judge`} className="inline-flex items-center gap-1 text-[12px] font-semibold text-neutral-600 hover:text-neutral-950">
+          <Link href={challengeHref(id, "learner=judge")} className="inline-flex items-center gap-1 text-[12px] font-semibold text-neutral-600 hover:text-neutral-950">
             Open in the workspace (Line Map, hints, replay) <ArrowRight className="size-3" />
           </Link>
         </motion.div>
@@ -174,7 +175,7 @@ export default function JudgesPage() {
   const [origin, setOrigin] = useState("http://localhost:3000");
   const [resetting, setResetting] = useState(false);
   useEffect(() => {
-    setOrigin(window.location.origin);
+    setOrigin(serverUrl() || window.location.origin);
     const poll = () => api.health().then((h) => setHealth({ ok: h.ok, llm: h.llm })).catch(() => setHealth({ ok: false, llm: null }));
     poll();
     const id = setInterval(poll, 5000);

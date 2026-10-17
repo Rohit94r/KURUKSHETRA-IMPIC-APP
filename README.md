@@ -23,6 +23,14 @@ Optional: free keys for **Groq**, **Gemini** and **ElevenLabs** in a git-ignored
 - `npm run dev` — the same with hot reload · `npm run url` — public URL via `ngrok http 3000`
 - `npm run seed` — reset the demo data · `npm run harness` — run the judges' checks on ourselves
 
+## Android app
+
+```bash
+npm run app:open      # export the web app → sync into apps/mobile/android → open Android Studio
+```
+
+The same pages in a native Capacitor shell — animated opening, bottom tabs with Priya in the middle, back button, haptics, streak reminders, pull to refresh, deep links. It talks to your Layerflow server (`npm start`; the emulator reaches it at `http://10.0.2.2:3000`, a phone via **Me → Server**). Details: [apps/mobile/README.md](apps/mobile/README.md).
+
 ## For the judges — a 15-minute tour
 
 | Where | What you can verify |

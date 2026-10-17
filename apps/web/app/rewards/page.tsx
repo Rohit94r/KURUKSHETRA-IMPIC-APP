@@ -20,6 +20,7 @@ import { PayoutTracker, Withdraw, type PayoutResult } from "@/components/rewards
 import { api, refreshPoints, timeAgo, type Goodie, type Redemption, type RewardsView, type Shipping } from "@/lib/api";
 import { useLearner } from "@/lib/learner";
 import { cn } from "@/lib/utils";
+import { challengeHref } from "@/lib/platform";
 
 const WEEKDAY = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -94,7 +95,7 @@ function StreakCard({ r }: { r: RewardsView }) {
       </div>
 
       {!s.today_done && (
-        <Link href={`/challenge/${r.today_pick.challenge_id}`} className="mt-5 flex items-center justify-between gap-3 rounded-2xl bg-neutral-950 px-4 py-3 text-white transition-transform hover:-translate-y-0.5">
+        <Link href={challengeHref(r.today_pick.challenge_id)} className="mt-5 flex items-center justify-between gap-3 rounded-2xl bg-neutral-950 px-4 py-3 text-white transition-transform hover:-translate-y-0.5">
           <span className="min-w-0">
             <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#bbf451]">Today's pick · +{r.rules.points_per_day} points</span>
             <span className="block truncate text-[14px] font-semibold">{r.today_pick.title}</span>

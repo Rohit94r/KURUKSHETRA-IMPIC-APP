@@ -23,6 +23,7 @@ import { SEVERITY_STYLE, StatusPill } from "@/components/bounty/bits";
 import { api, timeAgo, type BountyList, type BountyReport, type HostedProgram, type PlatformProgram } from "@/lib/api";
 import { useLearner } from "@/lib/learner";
 import { cn } from "@/lib/utils";
+import { bountyHref } from "@/lib/platform";
 
 const DIFF: Record<PlatformProgram["difficulty"], string> = {
   beginner: "bg-[#359462]/12 text-[#2f7c53]",
@@ -35,7 +36,7 @@ function PlatformCard({ p, i }: { p: PlatformProgram; i: number }) {
   const { name } = companyName(p.company);
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-      <Link href={`/bounty/${p.id}`} className="group flex h-full flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 transition-colors hover:border-neutral-400">
+      <Link href={bountyHref(p.id)} className="group flex h-full flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 transition-colors hover:border-neutral-400">
         <div className="flex items-start gap-3">
           <LogoTile src={p.logo} name={name} size={44} full />
           <div className="min-w-0 flex-1">
@@ -84,7 +85,7 @@ function ReportsList({ reports }: { reports: BountyReport[] }) {
     <Card className="!p-0">
       <div className="divide-y divide-neutral-100">
         {reports.map((r) => (
-          <Link key={r.id} href={`/bounty/${r.program_id}`} className="flex flex-wrap items-center gap-3 px-5 py-3.5 hover:bg-neutral-50">
+          <Link key={r.id} href={bountyHref(r.program_id)} className="flex flex-wrap items-center gap-3 px-5 py-3.5 hover:bg-neutral-50">
             <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: SEVERITY_STYLE[(r.final_severity ?? r.severity) as keyof typeof SEVERITY_STYLE]?.color ?? "#999" }} />
             <div className="min-w-0 flex-1">
               <p className="truncate text-[13.5px] font-semibold text-neutral-900">{r.title}</p>
@@ -243,7 +244,7 @@ export default function BountyPage() {
               </div>
             </Card>
           ) : (
-            <HostForm plans={data.plans} learner={learner} onCreated={(id) => router.push(`/bounty/${id}`)} />
+            <HostForm plans={data.plans} learner={learner} onCreated={(id) => router.push(bountyHref(id))} />
           )}
         </motion.div>
       </AnimatePresence>

@@ -42,6 +42,8 @@ import { useSpeaker, useListener } from "@/lib/voice";
 import { Markdown } from "@/components/app/Markdown";
 import { Portal } from "@/components/app/Portal";
 import { VisualSummary } from "./VisualSummary";
+import { challengeHref } from "@/lib/platform";
+import { useBackHandler } from "@/lib/native";
 
 type Lang = "en" | "hi" | "mr";
 interface Msg {
@@ -401,6 +403,8 @@ function MeetRoomInner({
     hangUp();
     onClose();
   };
+  // the Android back button hangs up, like the red button
+  useBackHandler(open, close);
 
   if (!open) return null;
 
@@ -479,9 +483,9 @@ function MeetRoomInner({
               <p className="mt-3 text-[13px] text-[#d93025]">
                 {error}
                 {isPlanLimit(error) && (
-                  <a href="/pricing" className="ml-1.5 font-semibold underline underline-offset-2">
+                  <Link href="/pricing" className="ml-1.5 font-semibold underline underline-offset-2">
                     See Pro
-                  </a>
+                  </Link>
                 )}
               </p>
             )}
@@ -537,7 +541,7 @@ function MeetRoomInner({
                     </li>
                   ))}
               </ul>
-              <Link href={`/challenge/${challengeId}`} className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#202124] px-5 py-2.5 text-[14px] font-medium text-white">
+              <Link href={challengeHref(challengeId)} className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#202124] px-5 py-2.5 text-[14px] font-medium text-white">
                 Try the fix now <ArrowRight className="size-4" />
               </Link>
             </div>
