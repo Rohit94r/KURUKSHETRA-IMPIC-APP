@@ -32,7 +32,8 @@ which is how the **Android emulator** reaches `npm start` on the same computer.
 - **A real phone:** connect it to the same Wi-Fi, then in the app go to **Me → Server**
   and enter your computer's LAN address (e.g. `http://192.168.1.5:3000`) → **Test** → **Save**.
   Or bake it in: `npm run app:build -- --server http://192.168.1.5:3000`.
-- **A deployed server:** use its URL (https recommended), e.g. `--server https://layerflow.example.com`.
+- **A deployed server:** use its URL (https recommended), e.g. `--server https://layerflow.onrender.com`
+  — hosting it on Render's free plan: [docs/render.md](../../docs/render.md).
 - **Any Layerflow server works as it is** — the app calls the API through Android's own HTTP
   stack (`apps/web/lib/app-fetch.ts`), so the server needs no CORS setup and plain `http` is fine.
   (CORS only matters when you open the app's exported pages in a desktop browser; the API allows

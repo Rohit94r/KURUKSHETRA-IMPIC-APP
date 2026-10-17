@@ -23,6 +23,10 @@ Optional: free keys for **Groq**, **Gemini** and **ElevenLabs** in a git-ignored
 - `npm run dev` — the same with hot reload · `npm run url` — public URL via `ngrok http 3000`
 - `npm run seed` — reset the demo data · `npm run harness` — run the judges' checks on ourselves
 
+## Hosting on Render
+
+`render.yaml` deploys the whole thing (website + API + sandbox) as one free Render web service — **New → Blueprint → this repo**. Steps and free-plan notes: [docs/render.md](docs/render.md).
+
 ## Android app
 
 ```bash

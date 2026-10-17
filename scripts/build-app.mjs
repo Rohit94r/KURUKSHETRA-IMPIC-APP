@@ -16,7 +16,7 @@
  * any time in the app (Me → Server).
  */
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, readdirSync, readFileSync, renameSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -38,18 +38,40 @@ function step(title) {
   console.log(`\n▸ ${title}`);
 }
 
+function exec(cmd, cmdArgs, cwd, env = {}) {
+  return spawnSync(process.execPath, [cmd, ...cmdArgs], { cwd, stdio: "inherit", env: { ...process.env, ...env } }).status ?? 1;
+}
+
 function run(cmd, cmdArgs, cwd, env = {}) {
-  const r = spawnSync(process.execPath, [cmd, ...cmdArgs], { cwd, stdio: "inherit", env: { ...process.env, ...env } });
-  if (r.status !== 0) process.exit(r.status ?? 1);
+  const status = exec(cmd, cmdArgs, cwd, env);
+  if (status !== 0) process.exit(status);
 }
 
 step(`exporting the web app (server: ${server})`);
 rmSync(outDir, { recursive: true, force: true });
-run(NEXT, ["build"], webDir, {
+// A static export always compiles in apps/web/.next (it only copies the result to out/),
+// and .next is where the website's own build lives — the one `npm start` serves. Park it
+// while the app builds and put it back after, so building the app never breaks the site.
+const webBuild = path.join(webDir, ".next");
+const parked = path.join(webDir, ".next-website");
+const hadWebBuild = existsSync(webBuild);
+if (hadWebBuild) {
+  rmSync(parked, { recursive: true, force: true });
+  try {
+    renameSync(webBuild, parked);
+  } catch {
+    console.error("✗ apps/web/.next is in use — stop `npm start` / `npm run dev` in this folder, then build the app again.");
+    process.exit(1);
+  }
+}
+const built = exec(NEXT, ["build"], webDir, {
   NEXT_PUBLIC_LAYERFLOW_APP: "1",
   NEXT_PUBLIC_LAYERFLOW_SERVER: server,
   NEXT_TELEMETRY_DISABLED: "1",
 });
+rmSync(webBuild, { recursive: true, force: true });
+if (hadWebBuild) renameSync(parked, webBuild);
+if (built !== 0) process.exit(built);
 
 step("flattening the router's segment files");
 // Next 16 exports per-segment payloads nested (dashboard/__next.dashboard/__PAGE__.txt)

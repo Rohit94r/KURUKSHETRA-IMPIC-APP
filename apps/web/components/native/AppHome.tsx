@@ -54,9 +54,22 @@ function Rise({ i, children, className }: { i: number; children: React.ReactNode
   );
 }
 
-function Skeleton() {
+function Skeleton({ slow }: { slow: boolean }) {
+  const { t } = useI18n();
   return (
     <div className="space-y-4">
+      {slow && (
+        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex items-start gap-3 rounded-3xl border border-[#fde1a8]/80 bg-[#fff6e3] p-4 lf-tint-amber">
+          <span className="relative mt-1 flex size-2.5 shrink-0">
+            <span className="absolute inset-0 animate-ping rounded-full bg-[#f59e0b]/60" />
+            <span className="size-2.5 rounded-full bg-[#f59e0b]" />
+          </span>
+          <div>
+            <p className="text-[14px] font-semibold text-neutral-900">{t("native.home.waking")}</p>
+            <p className="mt-0.5 text-[12.5px] leading-[1.5] text-neutral-600">{t("native.home.wakingBody")}</p>
+          </div>
+        </motion.div>
+      )}
       <div className="h-8 w-48 animate-pulse rounded-xl bg-neutral-200/70" />
       <div className="h-52 animate-pulse rounded-[28px] bg-neutral-200/70" />
       <div className="grid grid-cols-2 gap-3">
@@ -195,6 +208,14 @@ export function AppHome() {
   const [rw, setRw] = useState<RewardsSummary | null>(null);
   const [bank, setBank] = useState<Record<string, ChallengeSummary>>({});
   const [down, setDown] = useState(false);
+  const [slow, setSlow] = useState(false);
+
+  // a sleeping free server takes a while to answer the first request — after a few seconds, say so
+  useEffect(() => {
+    if (me || down) return;
+    const id = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(id);
+  }, [me, down]);
 
   const load = useCallback(() => {
     if (!learner) return;
@@ -230,7 +251,7 @@ export function AppHome() {
       {down ? (
         <ServerDown onRetry={load} />
       ) : !me ? (
-        <Skeleton />
+        <Skeleton slow={slow} />
       ) : (
         <div className="space-y-6">
           <Rise i={1}>

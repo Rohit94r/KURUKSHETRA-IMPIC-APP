@@ -136,7 +136,7 @@ const en = {
     pull: "Pull to refresh",
     release: "Release to refresh",
     share: "Share",
-    splash: { tagline: "find the bug. keep the skill.", connecting: "connecting to the sandbox…", ready: "sandbox ready", warm: "{n} warm", offline: "server offline — you can still look around" },
+    splash: { tagline: "find the bug. keep the skill.", connecting: "connecting to the sandbox…", ready: "sandbox ready", warm: "{n} warm", offline: "server offline — you can still look around", waking: "waking the server up…" },
     home: {
       morning: "Good morning",
       afternoon: "Good afternoon",
@@ -166,6 +166,8 @@ const en = {
       serverDownBody: "Check the server is running and that this phone can reach it. You can point the app at another server any time.",
       retry: "Try again",
       changeServer: "Change server",
+      waking: "Waking the server up…",
+      wakingBody: "A free server naps when nobody is using it — the first visit after a break can take up to a minute.",
     },
     tiles: {
       mentoring: "Talk it through with Priya",
@@ -324,7 +326,7 @@ const hi: DeepPartial<Dictionary> = {
     pull: "रिफ़्रेश करने के लिए खींचें",
     release: "रिफ़्रेश करने के लिए छोड़ें",
     share: "शेयर करें",
-    splash: { tagline: "बग ढूँढो। हुनर रखो।", connecting: "सैंडबॉक्स से जुड़ रहे हैं…", ready: "सैंडबॉक्स तैयार", warm: "{n} तैयार", offline: "सर्वर ऑफ़लाइन — फिर भी आप घूम सकते हैं" },
+    splash: { tagline: "बग ढूँढो। हुनर रखो।", connecting: "सैंडबॉक्स से जुड़ रहे हैं…", ready: "सैंडबॉक्स तैयार", warm: "{n} तैयार", offline: "सर्वर ऑफ़लाइन — फिर भी आप घूम सकते हैं", waking: "सर्वर जाग रहा है…" },
     home: {
       morning: "सुप्रभात",
       afternoon: "नमस्ते",
@@ -354,6 +356,8 @@ const hi: DeepPartial<Dictionary> = {
       serverDownBody: "देखें कि सर्वर चल रहा है और यह फ़ोन उस तक पहुँच सकता है। आप कभी भी दूसरा सर्वर चुन सकते हैं।",
       retry: "फिर कोशिश करें",
       changeServer: "सर्वर बदलें",
+      waking: "सर्वर जाग रहा है…",
+      wakingBody: "फ़्री सर्वर खाली होने पर सो जाता है — थोड़ी देर बाद पहली बार खोलने में एक मिनट तक लग सकता है।",
     },
     tiles: {
       mentoring: "प्रिया से बात करें",
@@ -509,7 +513,7 @@ const mr: DeepPartial<Dictionary> = {
     pull: "रिफ्रेशसाठी खाली ओढा",
     release: "रिफ्रेशसाठी सोडा",
     share: "शेअर करा",
-    splash: { tagline: "बग शोधा. कौशल्य टिकवा.", connecting: "सँडबॉक्सशी जोडत आहोत…", ready: "सँडबॉक्स तयार", warm: "{n} तयार", offline: "सर्व्हर ऑफलाइन — तरीही तुम्ही फिरू शकता" },
+    splash: { tagline: "बग शोधा. कौशल्य टिकवा.", connecting: "सँडबॉक्सशी जोडत आहोत…", ready: "सँडबॉक्स तयार", warm: "{n} तयार", offline: "सर्व्हर ऑफलाइन — तरीही तुम्ही फिरू शकता", waking: "सर्व्हर जागा होत आहे…" },
     home: {
       morning: "सुप्रभात",
       afternoon: "नमस्कार",
@@ -539,6 +543,8 @@ const mr: DeepPartial<Dictionary> = {
       serverDownBody: "सर्व्हर चालू आहे आणि हा फोन तिथे पोहोचू शकतो का ते तपासा. तुम्ही कधीही दुसरा सर्व्हर निवडू शकता.",
       retry: "पुन्हा प्रयत्न करा",
       changeServer: "सर्व्हर बदला",
+      waking: "सर्व्हर जागा होत आहे…",
+      wakingBody: "फ्री सर्व्हर कोणी वापरत नसताना झोपतो — थोड्या वेळाने पहिल्यांदा उघडताना एक मिनिटापर्यंत लागू शकतो.",
     },
     tiles: {
       mentoring: "प्रियाशी बोला",

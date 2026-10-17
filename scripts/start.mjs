@@ -11,12 +11,15 @@
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dev = process.argv.includes("--dev");
 const webDir = path.join(root, "apps/web");
 const TSX = path.join(root, "node_modules/tsx/dist/cli.mjs");
+// The API loads tsx in-process (`node --import tsx`) rather than through the tsx CLI,
+// which would keep a ~50 MB wrapper process alive — it matters on 512 MB hosts.
+const TSX_LOADER = pathToFileURL(path.join(root, "node_modules/tsx/dist/loader.mjs")).href;
 const NEXT = path.join(root, "node_modules/next/dist/bin/next");
 const WEB_PORT = process.env.PORT ?? "3000";
 const API_PORT = process.env.LAYERFLOW_API_PORT ?? "4000";
@@ -100,7 +103,7 @@ if (!dev && (!existsSync(buildId) || stale)) {
   }
 }
 
-run("api", "33", [TSX, path.join(root, "apps/api/src/server.ts")], root, { LAYERFLOW_API_PORT: API_PORT, LAYERFLOW_PARENT_PID: String(process.pid) });
+run("api", "33", ["--import", TSX_LOADER, path.join(root, "apps/api/src/server.ts")], root, { LAYERFLOW_API_PORT: API_PORT, LAYERFLOW_PARENT_PID: String(process.pid) });
 const started = Date.now();
 const wait = async (url) => {
   for (;;) {

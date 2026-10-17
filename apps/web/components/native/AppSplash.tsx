@@ -37,7 +37,7 @@ const RISE = -58;
 const MIN_MS = 2600;
 const MAX_MS = 3600;
 
-type Health = { state: "checking" } | { state: "ready"; warm: number | null } | { state: "offline" };
+type Health = { state: "checking" } | { state: "waking" } | { state: "ready"; warm: number | null } | { state: "offline" };
 
 function splashAlreadyShown(): boolean {
   try {
@@ -114,7 +114,8 @@ export function AppSplash() {
       });
     });
     let alive = true;
-    const giveUp = setTimeout(() => alive && setHealth((h) => (h.state === "checking" ? { state: "offline" } : h)), MAX_MS);
+    // still no answer: a free server that was asleep takes a while to wake — say so, don't call it down
+    const giveUp = setTimeout(() => alive && setHealth((h) => (h.state === "checking" ? { state: "waking" } : h)), MAX_MS - 900);
     api
       .health()
       .then((h) => alive && setHealth(h.ok ? { state: "ready", warm: h.sandbox?.warm ?? null } : { state: "offline" }))
@@ -300,14 +301,16 @@ export function AppSplash() {
           >
             <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[11.5px] font-medium text-white/60 backdrop-blur">
               <span className="relative flex size-2">
-                {health.state === "checking" && <span className="absolute inset-0 animate-ping rounded-full bg-white/40" />}
-                <span className={health.state === "ready" ? "size-2 rounded-full bg-[#5fd08f]" : health.state === "offline" ? "size-2 rounded-full bg-[#f59e0b]" : "size-2 rounded-full bg-white/50"} />
+                {(health.state === "checking" || health.state === "waking") && <span className={health.state === "waking" ? "absolute inset-0 animate-ping rounded-full bg-[#f59e0b]/60" : "absolute inset-0 animate-ping rounded-full bg-white/40"} />}
+                <span className={health.state === "ready" ? "size-2 rounded-full bg-[#5fd08f]" : health.state === "offline" || health.state === "waking" ? "size-2 rounded-full bg-[#f59e0b]" : "size-2 rounded-full bg-white/50"} />
               </span>
               <AnimatePresence mode="wait">
                 <motion.span key={health.state} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}>
                   {health.state === "checking"
                     ? t("native.splash.connecting")
-                    : health.state === "ready"
+                    : health.state === "waking"
+                      ? t("native.splash.waking")
+                      : health.state === "ready"
                       ? `${t("native.splash.ready")}${health.warm ? ` · ${t("native.splash.warm", { n: health.warm })}` : ""}`
                       : t("native.splash.offline")}
                 </motion.span>

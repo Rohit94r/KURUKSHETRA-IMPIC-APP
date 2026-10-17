@@ -1,0 +1,66 @@
+# Render Blueprint — Layerflow on one free web service: the website, the API
+# and the Python sandbox (`npm start` runs the API on 127.0.0.1:4000 and Next on
+# $PORT, which proxies /api/*). The Android app talks to its URL.
+#
+#   Render → New → Blueprint → this repo → fill in the keys → Apply.
+#   Details and the no-Blueprint route: docs/render.md
+#
+# Free plan: 512 MB RAM, 0.1 CPU, sleeps after 15 idle minutes, no disk. So:
+#   • the demo learners are seeded during the BUILD, and the seeded database
+#     ships with every deploy — boot is fast, and every restart starts from
+#     that demo state (progress made since is not kept);
+#   • the sandbox runs one Python process at a time, with a tighter memory cap.
+# On a paid plan, raise LAYERFLOW_WARM / LAYERFLOW_MAX_RUNNERS and add a disk
+# (LAYERFLOW_DB=/var/data/layerflow.db) to keep progress.
+services:
+  - type: web
+    name: layerflow
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    autoDeploy: true
+    # devDependencies are needed at run time too (tsx runs the TypeScript API)
+    buildCommand: npm ci --include=dev && npm run build && npm run seed
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      # only Next's $PORT is public; the API stays private behind its /api proxy
+      - key: LAYERFLOW_API_HOST
+        value: 127.0.0.1
+      # fit the sandbox in 512 MB: one warm runner, one at a time, smaller budget per run
+      - key: LAYERFLOW_WARM
+        value: "1"
+      - key: LAYERFLOW_MAX_RUNNERS
+        value: "1"
+      - key: LAYERFLOW_MEM_MB
+        value: "64"
+      # same choices as deploy/debug-dojo.service: no daily caps, demo checkout
+      - key: LAYERFLOW_LIMITS
+        value: "off"
+      - key: LAYERFLOW_CHECKOUT
+        value: demo
+      - key: LAYERFLOW_TZ_OFFSET_MIN
+        value: "330"
+      # protects /admin (cash-outs) on a public URL — Render makes one; see it under Environment
+      - key: LAYERFLOW_ADMIN_TOKEN
+        generateValue: true
+      # optional keys — Render asks for these when the Blueprint is created; leave any blank
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
